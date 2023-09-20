@@ -1,4 +1,5 @@
 from settings import ALLOWED_CHAR
+
 from .models import URLMap
 
 

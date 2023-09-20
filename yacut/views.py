@@ -1,5 +1,7 @@
 from random import choice
-from flask import flash, render_template, abort, redirect
+
+from flask import abort, flash, redirect, render_template
+
 from settings import ALLOWED_CHAR
 
 from . import app, db
