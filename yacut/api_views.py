@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from flask import jsonify, request, url_for
 
 from . import app, db
@@ -27,8 +29,6 @@ def get_short_url():
         short_link = get_unique_short_id()
         while URLMap.query.filter_by(short=short_link).first():
             short_link = get_unique_short_id()
-    elif not val_check[0]:
-        raise InvalidAPIUsage(val_check[1])
     else:
         short_link = val_check
     url = URLMap(
@@ -38,12 +38,14 @@ def get_short_url():
     url.from_dict(data)
     db.session.add(url)
     db.session.commit()
-    return jsonify({'short_link': url_for('redirect_url', url=short_link, _external=True), 'url': link}), 201
+    return jsonify(
+        {'short_link': url_for('redirect_url', url=short_link, _external=True), 'url': link}
+    ), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<string:short_id>/', methods=['GET'])
 def get_full_url(short_id):
     link = URLMap.query.filter_by(short=short_id).first()
     if link is None:
-        raise InvalidAPIUsage('Указанный id не найден', 404)
-    return jsonify({'url': link.original}), 200
+        raise InvalidAPIUsage('Указанный id не найден', HTTPStatus.NOT_FOUND)
+    return jsonify({'url': link.original}), HTTPStatus.OK

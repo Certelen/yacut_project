@@ -1,6 +1,6 @@
 from random import choice
 
-from flask import abort, flash, redirect, render_template
+from flask import redirect, render_template, flash
 
 from settings import ALLOWED_CHAR
 
@@ -49,7 +49,5 @@ def index_view():
 
 @app.route('/<string:url>')
 def redirect_url(url):
-    link = URLMap.query.filter_by(short=url).first()
-    if link is None:
-        abort(404)
+    link = URLMap.query.filter_by(short=url).first_or_404()
     return redirect(link.original)

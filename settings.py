@@ -11,3 +11,5 @@ class Config(object):
 
 
 ALLOWED_CHAR = ascii_letters + digits
+MIN_USER_SHORT = 1
+MAX_USER_SHORT = 16
