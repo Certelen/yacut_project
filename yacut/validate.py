@@ -1,5 +1,3 @@
-from flask import flash
-
 from settings import ALLOWED_CHAR, MAX_USER_SHORT
 
 from .error_handlers import InvalidAPIUsage

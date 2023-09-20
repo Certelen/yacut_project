@@ -1,6 +1,6 @@
 from random import choice
 
-from flask import redirect, render_template, flash
+from flask import flash, redirect, render_template
 
 from settings import ALLOWED_CHAR
 
