@@ -4,23 +4,17 @@ from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 
 
-def validate_short(short_link, api=False):
+def validate_short(short_link):
     message = 'Указано недопустимое имя для короткой ссылки'
     if short_link is None:
-        return True
+        return False
     if URLMap.query.filter_by(short=short_link).first():
-        if api:
-            raise InvalidAPIUsage(f'Имя "{short_link}" уже занято.')
-        return False, f'Имя {short_link} уже занято!'
+        raise InvalidAPIUsage(f'Имя "{short_link}" уже занято.')
     if len(short_link) > MAX_USER_SHORT:
-        if api:
-            raise InvalidAPIUsage(message)
-        return False, message
+        raise InvalidAPIUsage(message)
     for sym in short_link:
         if sym not in ALLOWED_CHAR:
-            if api:
-                raise InvalidAPIUsage(message)
-            return False, message
+            raise InvalidAPIUsage(message)
     return short_link
 
 
@@ -29,14 +23,27 @@ def validate_original(original_link):
         exist_link = URLMap.query.filter_by(original=original_link).first()
         short_link = exist_link.short
         return short_link
-    return True
+    return False
 
 
-def validate(original, short, api=False):
+def validate(original, short):
     if not original:
-        if api:
-            raise InvalidAPIUsage('Вставьте длинную ссылку')
-        return False, 'Вставьте длинную ссылку'
+        raise InvalidAPIUsage('Вставьте длинную ссылку')
     if short:
-        return validate_short(short, api)
+        return validate_short(short)
     return validate_original(original)
+
+def validate_data(data):
+    if data is None:
+        raise InvalidAPIUsage(
+            'Отсутствует тело запроса')
+    if 'url' not in data:
+        raise InvalidAPIUsage(
+            '"url" является обязательным полем!')
+    link = data['url']
+    user_short = False
+    if 'custom_id' in data:
+        if not data['custom_id']:
+            data['custom_id'] = None
+        user_short = data['custom_id']
+    return validate(link, user_short)
