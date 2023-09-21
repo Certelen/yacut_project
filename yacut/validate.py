@@ -33,6 +33,7 @@ def validate(original, short):
         return validate_short(short)
     return validate_original(original)
 
+
 def validate_data(data):
     if data is None:
         raise InvalidAPIUsage(
